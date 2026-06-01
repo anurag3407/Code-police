@@ -33,49 +33,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Handle redirect result from Google Sign-In
-    const handleRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          // User signed in via redirect, create/fetch user document
-          const userRef = doc(db, 'users', result.user.uid);
-          const userSnap = await getDoc(userRef);
-          
-          if (!userSnap.exists()) {
-            // New user - will be handled by createUserDocument below
-          }
-        }
-      } catch (error) {
-        console.error('Redirect sign-in error:', error);
-      }
-    };
-    
-    handleRedirectResult();
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-      if (user) {
-        // Fetch or create user document
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          setUserDoc(userSnap.data() as UserDoc);
-        } else {
-          // Create user document for redirect sign-in
-          const newUserDoc = await createUserDocumentHelper(user);
-          setUserDoc(newUserDoc);
-        }
-      } else {
-        setUserDoc(null);
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
   // Helper function to create user document (used by both useEffect and signUpWithEmail)
   const createUserDocumentHelper = async (user: User, displayName?: string) => {
     const userRef = doc(db, 'users', user.uid);
@@ -132,6 +89,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return userSnap.data() as UserDoc;
   };
+
+  useEffect(() => {
+    // Handle redirect result from Google Sign-In
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          // User signed in via redirect, create/fetch user document
+          const userRef = doc(db, 'users', result.user.uid);
+          const userSnap = await getDoc(userRef);
+          
+          if (!userSnap.exists()) {
+            // New user - will be handled by createUserDocument below
+          }
+        }
+      } catch (error) {
+        console.error('Redirect sign-in error:', error);
+      }
+    };
+    
+    handleRedirectResult();
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setUser(user);
+      if (user) {
+        // Fetch or create user document
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setUserDoc(userSnap.data() as UserDoc);
+        } else {
+          // Create user document for redirect sign-in
+          const newUserDoc = await createUserDocumentHelper(user);
+          setUserDoc(newUserDoc);
+        }
+      } else {
+        setUserDoc(null);
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();

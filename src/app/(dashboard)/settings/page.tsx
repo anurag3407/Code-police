@@ -1,6 +1,6 @@
 'use client';
 
-import { useOrg } from '@/hooks/use-org';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -30,7 +30,6 @@ const categories = [
 ];
 
 export default function SettingsPage() {
-  const { currentOrg } = useOrg();
 
   return (
     <div className="space-y-6">

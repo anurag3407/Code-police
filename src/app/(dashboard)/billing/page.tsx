@@ -1,6 +1,6 @@
 'use client';
 
-import { useOrg } from '@/hooks/use-org';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,6 @@ import { Separator } from '@/components/ui/separator';
 import { 
   CreditCard, 
   CheckCircle2, 
-  Zap, 
   Users, 
   FolderGit2,
   Activity
@@ -60,7 +59,6 @@ const plans = [
 ];
 
 export default function BillingPage() {
-  const { currentOrg } = useOrg();
 
   return (
     <div className="space-y-6">

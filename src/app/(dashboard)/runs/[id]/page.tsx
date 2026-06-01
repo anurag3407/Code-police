@@ -1,6 +1,6 @@
 'use client';
 
-import { useParams } from 'next/navigation';
+
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   ArrowLeft,
-  GitCommit,
+
   GitBranch,
   User,
   Clock,
@@ -107,7 +107,7 @@ const categoryIcons = {
 };
 
 export default function RunDetailPage() {
-  const params = useParams();
+
   const [expandedIssue, setExpandedIssue] = useState<string | null>(null);
 
   return (

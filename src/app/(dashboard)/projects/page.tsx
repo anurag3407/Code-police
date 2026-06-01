@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useOrg } from '@/hooks/use-org';
 import { useAuth } from '@/hooks/use-auth';
-import { doc, updateDoc, collection, addDoc, getDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { Timestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -155,34 +155,34 @@ export default function ProjectsPage() {
   
   // Fetch GitHub repos when dialog opens
   useEffect(() => {
+    const fetchGitHubRepos = async () => {
+      if (!userDoc?.githubAccessToken) return;
+      
+      setLoadingRepos(true);
+      try {
+        const response = await fetch('/api/github/repos', {
+          headers: {
+            'Authorization': `Bearer ${userDoc.githubAccessToken}`,
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setGithubRepos(data.repositories);
+        } else {
+          console.error('Failed to fetch repos');
+        }
+      } catch (error) {
+        console.error('Error fetching repos:', error);
+      } finally {
+        setLoadingRepos(false);
+      }
+    };
+
     if (repoSelectOpen && userDoc?.githubAccessToken) {
       fetchGitHubRepos();
     }
   }, [repoSelectOpen, userDoc]);
-
-  const fetchGitHubRepos = async () => {
-    if (!userDoc?.githubAccessToken) return;
-    
-    setLoadingRepos(true);
-    try {
-      const response = await fetch('/api/github/repos', {
-        headers: {
-          'Authorization': `Bearer ${userDoc.githubAccessToken}`,
-        },
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setGithubRepos(data.repositories);
-      } else {
-        console.error('Failed to fetch repos');
-      }
-    } catch (error) {
-      console.error('Error fetching repos:', error);
-    } finally {
-      setLoadingRepos(false);
-    }
-  };
 
   const handleConnectRepo = async (repo: GitHubRepo) => {
     if (!user || !userDoc?.githubAccessToken || !currentOrg) return;
